@@ -4,47 +4,33 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Diego Marin — Portafolio</title>
-
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
-
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          colors: {
-            base: '#0a0a0f', surface: '#111118', neon: '#00f5a0', accent: '#00d9f5', light: '#e8e8f0', muted: '#8888aa',
-          },
+          colors: { base: '#0a0a0f', surface: '#111118', neon: '#00f5a0', accent: '#00d9f5', light: '#e8e8f0', muted: '#8888aa' },
           fontFamily: { syne: ['Syne', 'sans-serif'], mono: ['Space Mono', 'monospace'] }
         }
       }
     }
   </script>
-
   <style>
-    /* ── Base ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body { background: #0a0a0f; color: #e8e8f0; font-family: 'Syne', sans-serif; overflow-x: hidden; cursor: none; }
-
-    /* ── Custom Cursor ── */
     #cursor { width: 10px; height: 10px; background: #00f5a0; border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999; box-shadow: 0 0 10px #00f5a0; }
     #cursor-ring { width: 34px; height: 34px; border: 1.5px solid rgba(0,245,160,0.45); border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9998; }
-
-    /* ── Scroll Progress ── */
     #progress-bar { position: fixed; top: 0; left: 0; height: 2px; background: linear-gradient(90deg, #00f5a0, #00d9f5); z-index: 10000; width: 0%; }
-
-    /* ── Navbar ── */
     .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 1.25rem 2.5rem; display: flex; align-items: center; justify-content: space-between; transition: 0.4s; }
     .navbar.scrolled { background: rgba(10,10,15,0.88); backdrop-filter: blur(18px); }
     .nav-logo { font-family: 'Space Mono', monospace; color: #00f5a0; font-size: 0.95rem; text-decoration: none; }
     .nav-links { display: flex; gap: 2.2rem; }
     .nav-links a { color: #8888aa; font-family: 'Space Mono', monospace; font-size: 0.7rem; text-transform: uppercase; text-decoration: none; cursor: none; }
     .nav-links a:hover { color: #00f5a0; }
-
-    /* ── Hero & Glitch ── */
     #hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; text-align: center; }
     #particles-js { position: absolute; inset: 0; z-index: 0; }
     .hero-content { position: relative; z-index: 1; }
@@ -53,41 +39,24 @@
     .glitch::before { color: #00f5a0; animation: glitch-anim 4s infinite; clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%); }
     .glitch::after { color: #00d9f5; animation: glitch-anim 4s infinite reverse; clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%); }
     @keyframes glitch-anim { 0%, 90% { transform: translate(0); } 92% { transform: translate(-5px, 2px); } 94% { transform: translate(5px, -2px); } 100% { transform: translate(0); } }
-
-    /* ── Foto de Perfil (NUEVO) ── */
-    .avatar-container {
-      width: 180px; height: 180px; border-radius: 50%;
-      border: 3px solid #1a1a2e; overflow: hidden;
-      position: relative; margin: 0 auto;
-      box-shadow: 0 0 20px rgba(0, 245, 160, 0.2);
-    }
+    .avatar-container { width: 180px; height: 180px; border-radius: 50%; border: 3px solid #1a1a2e; overflow: hidden; position: relative; margin: 0 auto; box-shadow: 0 0 20px rgba(0, 245, 160, 0.2); }
     .profile-photo { width: 100%; height: 100%; object-fit: cover; }
-    .avatar-container::after {
-      content: ''; position: absolute; inset: -5px; border-radius: 50%;
-      border: 2px solid rgba(0,245,160,0.4); animation: ring-pulse 2.5s infinite;
-    }
+    .avatar-container::after { content: ''; position: absolute; inset: -5px; border-radius: 50%; border: 2px solid rgba(0,245,160,0.4); animation: ring-pulse 2.5s infinite; }
     @keyframes ring-pulse { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.3); opacity: 0; } }
-
-    /* ── Estilos Generales ── */
     .section-tag { font-family: 'Space Mono', monospace; color: #00f5a0; font-size: 0.7rem; letter-spacing: 0.3em; margin-bottom: 1rem; }
     .section-title { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; }
     .section-title span { color: #00f5a0; }
     .neon-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(0,245,160,0.3), transparent); }
     .btn-neon { padding: 0.8rem 2rem; border: 1px solid #00f5a0; color: #00f5a0; font-family: 'Space Mono'; font-size: 0.7rem; text-decoration: none; transition: 0.3s; }
     .btn-neon:hover { background: #00f5a0; color: #0a0a0f; }
-
-    /* ── Cards ── */
-    .skill-card, .cert-card, .hobby-card { background: #111118; border: 1px solid rgba(136,136,170,0.1); padding: 1.5rem; transition: 0.3s; }
+    .skill-card, .cert-card { background: #111118; border: 1px solid rgba(136,136,170,0.1); padding: 1.5rem; transition: 0.3s; }
     .skill-card:hover { border-color: #00f5a0; transform: translateX(5px); }
-    .cert-card:hover { border-color: #00d9f5; transform: translateY(-5px); }
   </style>
 </head>
-
 <body>
   <div id="cursor"></div>
   <div id="cursor-ring"></div>
   <div id="progress-bar"></div>
-
   <div id="app">
     <nav class="navbar" :class="{ scrolled: scrolled }">
       <a href="#" class="nav-logo"><i class="fa-solid fa-terminal mr-2"></i>DM.portfolio</a>
@@ -95,101 +64,45 @@
         <li v-for="item in navItems"><a :href="item.href">{{ item.label }}</a></li>
       </ul>
     </nav>
-
     <section id="hero">
       <div id="particles-js"></div>
       <div class="hero-content">
         <h1 class="glitch" data-text="Diego Marin">Diego Marin</h1>
         <div class="mt-4 font-mono text-neon text-lg">{{ currentRole }}<span class="animate-pulse">|</span></div>
-        <div class="mt-10 flex gap-4 justify-center">
-          <a href="#about" class="btn-neon">Conocerme</a>
-          <a href="#contact" class="btn-neon" style="border-color:#00d9f5; color:#00d9f5;">Contactar</a>
-        </div>
       </div>
     </section>
-
-    <div class="neon-divider"></div>
-
     <section id="about" class="py-24 px-10 bg-surface">
       <div class="max-w-6xl mx-auto grid md:grid-cols-3 gap-16 items-center">
         <div data-aos="fade-right" class="text-center">
           <div class="avatar-container mb-6">
-            <img src="perfil.jpg" alt="Diego Marin" class="profile-photo">
+            <img src="perfil.png" alt="Diego Marin" class="profile-photo">
           </div>
           <h3 class="text-2xl font-bold">Diego Marin</h3>
-          <p class="text-neon font-mono text-xs uppercase tracking-widest mt-2">Multidisciplinario</p>
           <div class="mt-6 flex flex-col gap-3 items-center text-muted text-xs font-mono">
-             <a href="https://github.com/diego0954-alt" class="hover:text-neon transition"><i class="fa-brands fa-github mr-2"></i>diego0954-alt</a>
-             <a href="mailto:diego0954@icloud.com" class="hover:text-accent transition"><i class="fa-solid fa-envelope mr-2"></i>diego0954@icloud.com</a>
+             <a href="https://github.com/diego0954-alt" class="hover:text-neon transition"><i class="fa-brands fa-github mr-2"></i>GitHub</a>
+             <a href="mailto:diego0954@icloud.com" class="hover:text-accent transition"><i class="fa-solid fa-envelope mr-2"></i>Email</a>
           </div>
         </div>
-        
         <div class="md:col-span-2" data-aos="fade-left">
           <p class="section-tag">// 01 — sobre mí</p>
-          <h2 class="section-title mb-6">Quién soy & <span>qué traigo</span></h2>
-          <p class="text-muted leading-relaxed mb-4">
-            Soy de esas personas que no se quedan en una sola cosa. Tengo base técnica en <b>Linux, AWS y SSH</b>, y al mismo tiempo fui formado en <b>gastronomía y hostelería</b>. Sé trabajar bajo presión, ya sea frente a un servidor caído o en una cocina llena.
-          </p>
-          <p class="text-muted leading-relaxed">
-            El voleibol me enseñó el trabajo en equipo y la pesca artesanal la paciencia. Tengo movilidad propia y disponibilidad inmediata en Chile para mi primera gran oportunidad.
-          </p>
+          <h2 class="section-title mb-6">Perfil <span>Multidisciplinario</span></h2>
+          <p class="text-muted leading-relaxed mb-4">Cloud, Linux y Gastronomía. Resolución de problemas bajo presión y disciplina constante.</p>
         </div>
       </div>
     </section>
-
-    <section id="skills" class="py-24 px-10">
-      <div class="max-w-6xl mx-auto">
-        <p class="section-tag">// 02 — capacidades</p>
-        <h2 class="section-title mb-12">Mi <span>Stack</span></h2>
-        <div class="grid md:grid-cols-3 gap-8">
-          <div v-for="(group, name) in skills" :key="name">
-            <h4 class="font-mono text-xs text-muted mb-6 uppercase tracking-widest">// {{ name }}</h4>
-            <div v-for="s in group" class="skill-card mb-4 flex items-center gap-4">
-              <i :class="s.icon" class="text-neon"></i>
-              <div>
-                <div class="text-sm font-bold">{{ s.name }}</div>
-                <div class="text-[10px] text-muted font-mono">{{ s.sub }}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="certs" class="py-24 px-10 bg-surface">
-      <div class="max-w-6xl mx-auto">
-        <p class="section-tag">// 03 — credenciales</p>
-        <h2 class="section-title mb-12">Logros <span>Certificados</span></h2>
-        <div class="grid md:grid-cols-4 gap-6">
-          <div v-for="c in certifications" class="cert-card">
-            <div class="text-3xl mb-4">{{ c.emoji }}</div>
-            <div class="text-sm font-bold mb-1">{{ c.title }}</div>
-            <div class="text-[10px] text-neon font-mono mb-3">{{ c.issuer }}</div>
-            <p class="text-xs text-muted leading-relaxed">{{ c.desc }}</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <footer class="py-12 text-center border-t border-white/5">
-      <p class="font-mono text-[10px] text-muted">© 2024 DIEGO MARIN · CHILE · DISPONIBILIDAD INMEDIATA</p>
-    </footer>
   </div>
-
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
-
   <script>
     const { createApp, ref, onMounted } = Vue;
     createApp({
       setup() {
         const scrolled = ref(false);
         const currentRole = ref('');
-        const roles = ['Cloud & Linux Enthusiast ☁️', 'Gastrónomo en formación 🍳', 'Pescador Artesanal Certificado 🎣', 'Jugador de Voleibol 🏐'];
-        
-        let ri = 0, ci = 0, del = false;
+        const roles = ['Cloud & Linux ☁️', 'Gastronomía 🍳', 'Pesca Artesanal 🎣'];
+        let ri=0, ci=0, del=false;
         function type() {
           const t = roles[ri];
           currentRole.value = del ? t.slice(0, --ci) : t.slice(0, ++ci);
@@ -197,57 +110,21 @@
           else if (del && ci === 0) { del = false; ri = (ri + 1) % roles.length; setTimeout(type, 500); }
           else { setTimeout(type, del ? 30 : 70); }
         }
-
-        const skills = {
-          tecnología: [
-            { name: 'Linux', sub: 'Admin Sistemas', icon: 'fa-brands fa-linux' },
-            { name: 'AWS', sub: 'Cloud Infra', icon: 'fa-brands fa-aws' },
-            { name: 'SSH / PuTTY', sub: 'Remote Management', icon: 'fa-solid fa-terminal' }
-          ],
-          gastronomía: [
-            { name: 'Cocina Técnica', sub: 'Higiene y Prep', icon: 'fa-solid fa-utensils' },
-            { name: 'Hostelería', sub: 'Servicio al Cliente', icon: 'fa-solid fa-hotel' }
-          ],
-          prácticas: [
-            { name: 'Pesca Artesanal', sub: 'Certificado Armada', icon: 'fa-solid fa-anchor' },
-            { name: 'Voley / Liderazgo', sub: 'Trabajo en Equipo', icon: 'fa-solid fa-volleyball' }
-          ]
-        };
-
-        const certifications = [
-          { title: 'Técnico Gastro', issuer: 'Ed. Media', emoji: '👨‍🍳', desc: 'Técnicas culinarias y gestión.' },
-          { title: 'Pescador Prof.', issuer: 'Sernapesca', emoji: '🎣', desc: 'Carnet oficial de pesca.' },
-          { title: 'Hostelería', issuer: 'Capacitación', emoji: '🛎️', desc: 'Atención y gestión hotelera.' },
-          { title: 'Cloud Found.', issuer: 'AWS Academy', emoji: '☁️', desc: 'Infraestructura cloud base.' }
-        ];
-
         onMounted(() => {
-          AOS.init();
-          type();
+          AOS.init(); type();
           window.addEventListener('scroll', () => {
             scrolled.value = window.scrollY > 50;
             const winScroll = document.documentElement.scrollTop;
             const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
             document.getElementById('progress-bar').style.width = (winScroll / height) * 100 + "%";
           });
-
-          const cursor = document.getElementById('cursor');
-          const ring = document.getElementById('cursor-ring');
           window.addEventListener('mousemove', (e) => {
-            gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0 });
-            gsap.to(ring, { x: e.clientX - 12, y: e.clientY - 12, duration: 0.2 });
+            gsap.to('#cursor', { x: e.clientX, y: e.clientY, duration: 0 });
+            gsap.to('#cursor-ring', { x: e.clientX - 12, y: e.clientY - 12, duration: 0.2 });
           });
-
-          particlesJS('particles-js', {
-            particles: {
-              number: { value: 50 }, color: { value: '#00f5a0' },
-              opacity: { value: 0.2 }, size: { value: 2 },
-              line_linked: { enable: true, distance: 150, color: '#00f5a0', opacity: 0.1 }
-            }
-          });
+          particlesJS('particles-js', { particles: { number: { value: 50 }, color: { value: '#00f5a0' }, opacity: { value: 0.2 }, size: { value: 2 }, line_linked: { enable: true, distance: 150, color: '#00f5a0', opacity: 0.1 } } });
         });
-
-        return { scrolled, currentRole, skills, certifications, navItems: [{label:'Sobre mí', href:'#about'}, {label:'Habilidades', href:'#skills'}, {label:'Certificados', href:'#certs'}] };
+        return { scrolled, currentRole, navItems: [{label:'Sobre mí', href:'#about'}] };
       }
     }).mount('#app');
   </script>
