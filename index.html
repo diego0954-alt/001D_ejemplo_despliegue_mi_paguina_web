@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diego Marin — Portafolio</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- AOS -->
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            base:     '#0a0a0f',
+            surface:  '#111118',
+            surface2: '#1a1a2e',
+            neon:     '#00f5a0',
+            accent:   '#00d9f5',
+            light:    '#e8e8f0',
+            muted:    '#8888aa',
+          },
+          fontFamily: {
+            syne: ['Syne', 'sans-serif'],
+            mono: ['Space Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: #0a0a0f;
+      color: #e8e8f0;
+      font-family: 'Syne', sans-serif;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ── Custom Cursor ── */
+    #cursor {
+      width: 10px; height: 10px;
+      background: #00f5a0;
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9999;
+      box-shadow: 0 0 10px #00f5a0, 0 0 22px #00f5a0;
+      transition: transform 0.05s linear;
+    }
+    #cursor-ring {
+      width: 34px; height: 34px;
+      border: 1.5px solid rgba(0,245,160,0.45);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9998;
+      transition: transform 0.35s cubic-bezier(0.23,1,0.32,1);
+    }
+
+    /* ── Scroll Progress Bar ── */
+    #progress-bar {
+      position: fixed; top: 0; left: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #00f5a0, #00d9f5);
+      z-index: 10000;
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+
+    /* ── Navbar ── */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 1.25rem 2.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: background 0.4s, backdrop-filter 0.4s, box-shadow 0.4s;
+    }
+    .navbar.scrolled {
+      background: rgba(10,10,15,0.88);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: 0 1px 0 rgba(0,245,160,0.08);
+    }
+    .nav-logo {
+      font-family: 'Space Mono', monospace;
+      color: #00f5a0;
+      font-size: 0.95rem;
+      letter-spacing: 0.12em;
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 2.2rem; list-style: none; }
+    .nav-links a {
+      color: #8888aa;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      text-decoration: none;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+      cursor: none;
+    }
+    .nav-links a:hover { color: #00f5a0; }
+    .hamburger {
+      display: none; cursor: none;
+      background: none; border: none;
+      color: #00f5a0; font-size: 1.25rem;
+    }
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hamburger { display: block; }
+      .nav-links.open {
+        display: flex; flex-direction: column;
+        position: absolute; top: 100%; left: 0; right: 0;
+        background: rgba(10,10,15,0.97);
+        backdrop-filter: blur(20px);
+        padding: 1.5rem 2.5rem;
+        gap: 1.25rem;
+        border-bottom: 1px solid rgba(0,245,160,0.1);
+      }
+    }
+
+    /* ── Hero ── */
+    #hero {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+      text-align: center;
+    }
+    #particles-js { position: absolute; inset: 0; z-index: 0; }
+    .hero-content { position: relative; z-index: 1; padding: 2rem; }
+
+    /* Glitch effect */
+    .glitch {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(3rem, 11vw, 7.5rem);
+      color: #e8e8f0;
+      position: relative;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+    .glitch::before, .glitch::after {
+      content: attr(data-text);
+      position: absolute; top: 0; left: 0; width: 100%;
+    }
+    .glitch::before {
+      color: #00f5a0;
+      animation: glitch-top 4s infinite;
+      clip-path: polygon(0 0, 100% 0, 100% 38%, 0 38%);
+    }
+    .glitch::after {
+      color: #00d9f5;
+      animation: glitch-bot 4s infinite;
+      clip-path: polygon(0 62%, 100% 62%, 100% 100%, 0 100%);
+    }
+    @keyframes glitch-top {
+      0%,90%,100%{ transform:translateX(0); opacity:0; }
+      91%{ transform:translateX(-5px); opacity:0.75; }
+      93%{ transform:translateX(4px); opacity:0.5; }
+      95%{ transform:translateX(0); opacity:0; }
+    }
+    @keyframes glitch-bot {
+      0%,85%,100%{ transform:translateX(0); opacity:0; }
+      86%{ transform:translateX(5px); opacity:0.75; }
+      88%{ transform:translateX(-3px); opacity:0.5; }
+      90%{ transform:translateX(0); opacity:0; }
+    }
+
+    /* Typewriter */
+    .typewriter-wrap { height: 2rem; overflow: hidden; margin-top: 1.4rem; }
+    .typewriter {
+      font-family: 'Space Mono', monospace;
+      color: #00f5a0;
+      font-size: clamp(0.8rem, 2.2vw, 1rem);
+      letter-spacing: 0.06em;
+    }
+    .cursor-blink {
+      display: inline-block;
+      width: 2px; height: 1em;
+      background: #00f5a0;
+      margin-left: 3px;
+      vertical-align: text-bottom;
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* CTA Buttons */
+    .btn-neon {
+      display: inline-block;
+      padding: 0.75rem 2rem;
+      border: 1px solid #00f5a0;
+      color: #00f5a0;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      text-decoration: none;
+      position: relative; overflow: hidden;
+      transition: color 0.3s;
+      cursor: none;
+    }
+    .btn-neon::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: #00f5a0;
+      transform: translateX(-101%);
+      transition: transform 0.32s cubic-bezier(0.23,1,0.32,1);
+    }
+    .btn-neon:hover { color: #0a0a0f; }
+    .btn-neon:hover::before { transform: translateX(0); }
+    .btn-neon span { position: relative; z-index: 1; }
+
+    .btn-cyan {
+      border-color: #00d9f5;
+      color: #00d9f5;
+    }
+    .btn-cyan::before { background: #00d9f5; }
+    .btn-cyan:hover { color: #0a0a0f; }
+
+    /* ── Neon Divider ── */
+    .neon-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,245,160,0.25), transparent);
+    }
+
+    /* ── Section Base ── */
+    section { padding: 6rem 2rem; }
+    .section-inner { max-width: 1100px; margin: 0 auto; }
+    .section-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.68rem;
+      color: #00f5a0;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      line-height: 1.08;
+      color: #e8e8f0;
+    }
+    .section-title span { color: #00f5a0; }
+    .gradient-text {
+      background: linear-gradient(135deg, #00f5a0, #00d9f5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── About ── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 4rem;
+      margin-top: 3.5rem;
+      align-items: start;
+    }
+    @media (max-width: 768px) {
+      .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+    }
+
+    .avatar {
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00f5a0, #00d9f5);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800; font-size: 2.2rem;
+      color: #0a0a0f;
+      margin: 0 auto;
+      position: relative;
+    }
+    .avatar::after {
+      content: '';
+      position: absolute; inset: -5px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(0,245,160,0.3);
+      animation: ring-pulse 2.5s ease-out infinite;
+    }
+    @keyframes ring-pulse {
+      0% { transform: scale(1); opacity: 0.7; }
+      100% { transform: scale(1.35); opacity: 0; }
+    }
+
+    .stat-card {
+      background: #111118;
+      border: 1px solid rgba(0,245,160,0.1);
+      padding: 1.4rem 1rem;
+      text-align: center;
+      transition: border-color 0.3s, transform 0.3s;
+      position: relative; overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(0,245,160,0.05), transparent);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .stat-card:hover { border-color: rgba(0,245,160,0.4); transform: translateY(-5px); }
+    .stat-card:hover::before { opacity: 1; }
+    .stat-number { font-family: 'Space Mono', monospace; font-size: 2rem; color: #00f5a0; font-weight: 700; }
+    .stat-label { font-size: 0.7rem; color: #8888aa; margin-top: 0.3rem; text-transform: uppercase; letter-spacing: 0.1em; line-height: 1.4; }
+
+    /* ── Skills ── */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2.5rem;
+      margin-top: 3.5rem;
+    }
+
+    .category-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.68rem;
+      color: #8888aa;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      margin-bottom: 1.1rem;
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .category-label::after {
+      content: '';
+      flex: 1; height: 1px;
+      background: rgba(136,136,170,0.18);
+    }
+
+    .skill-card {
+      background: #111118;
+      border: 1px solid rgba(136,136,170,0.1);
+      padding: 1rem 1.4rem;
+      display: flex; align-items: center; gap: 1rem;
+      transition: border-color 0.25s, transform 0.25s, background 0.25s;
+      cursor: none;
+      margin-bottom: 0.6rem;
+    }
+    .skill-card:last-child { margin-bottom: 0; }
+    .skill-card:hover {
+      border-color: rgba(0,245,160,0.38);
+      background: rgba(0,245,160,0.035);
+      transform: translateX(7px);
+    }
+    .skill-card.cyan:hover { border-color: rgba(0,217,245,0.38); background: rgba(0,217,245,0.035); }
+    .skill-card.purple:hover { border-color: rgba(167,139,250,0.38); background: rgba(167,139,250,0.035); }
+    .skill-card i { font-size: 1rem; width: 20px; text-align: center; }
+    .skill-name { font-size: 0.88rem; color: #e8e8f0; font-weight: 600; }
+    .skill-sub { font-family: 'Space Mono', monospace; font-size: 0.62rem; color: #8888aa; margin-top: 1px; }
+
+    /* ── Cert Cards ── */
+    .certs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1.4rem;
+      margin-top: 3.5rem;
+    }
+    .cert-card {
+      background: #111118;
+      border: 1px solid rgba(0,217,245,0.12);
+      padding: 1.75rem;
+      position: relative; overflow: hidden;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+    .cert-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, #00f5a0, #00d9f5);
+    }
+    .cert-card:hover { transform: translateY(-6px); border-color: rgba(0,217,245,0.35); }
+    .cert-emoji { font-size: 2.2rem; margin-bottom: 1rem; display: block; }
+    .cert-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.98rem; color: #e8e8f0; margin-bottom: 0.35rem; }
+    .cert-issuer { font-family: 'Space Mono', monospace; font-size: 0.62rem; color: #00f5a0; letter-spacing: 0.1em; }
+    .cert-desc { font-size: 0.76rem; color: #8888aa; margin-top: 0.7rem; line-height: 1.75; }
+
+    /* ── Hobbies ── */
+    .hobbies-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.2rem;
+      margin-top: 3.5rem;
+    }
+    .hobby-card {
+      background: #111118;
+      border: 1px solid rgba(136,136,170,0.09);
+      padding: 2.2rem 1.3rem;
+      text-align: center;
+      transition: transform 0.3s, border-color 0.3s, background 0.3s;
+    }
+    .hobby-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      border-color: rgba(0,245,160,0.28);
+      background: rgba(0,245,160,0.03);
+    }
+    .hobby-emoji { font-size: 2.6rem; display: block; margin-bottom: 0.9rem; }
+    .hobby-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; color: #e8e8f0; }
+    .hobby-desc { font-size: 0.74rem; color: #8888aa; margin-top: 0.4rem; line-height: 1.65; }
+
+    /* ── Contact ── */
+    .contact-link {
+      display: flex; align-items: center; gap: 1.2rem;
+      padding: 1.4rem 1.6rem;
+      background: #111118;
+      border: 1px solid rgba(136,136,170,0.1);
+      text-decoration: none; color: #e8e8f0;
+      transition: border-color 0.25s, background 0.25s, transform 0.25s;
+      cursor: none;
+    }
+    .contact-link:hover {
+      border-color: rgba(0,245,160,0.38);
+      background: rgba(0,245,160,0.035);
+      transform: translateX(7px);
+    }
+    .contact-link i.icon { font-size: 1.2rem; color: #00f5a0; width: 22px; }
+    .contact-label { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: #8888aa; text-transform: uppercase; letter-spacing: 0.12em; }
+    .contact-value { font-size: 0.93rem; color: #e8e8f0; margin-top: 1px; }
+    .contact-arrow { margin-left: auto; color: #555565; font-size: 0.85rem; transition: color 0.2s, transform 0.2s; }
+    .contact-link:hover .contact-arrow { color: #00f5a0; transform: translateX(4px); }
+
+    /* Status badge */
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(0,245,160,0.07);
+      border: 1px solid rgba(0,245,160,0.15);
+      padding: 0.45rem 1rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.68rem;
+      color: #00f5a0;
+      letter-spacing: 0.1em;
+    }
+    .status-dot {
+      width: 6px; height: 6px;
+      background: #00f5a0;
+      border-radius: 50%;
+      animation: pulse-dot 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid rgba(136,136,170,0.08);
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: #0a0a0f; }
+    ::-webkit-scrollbar-thumb { background: #00f5a0; border-radius: 2px; }
+
+    /* ── Misc ── */
+    .tag-pill {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border: 1px solid rgba(0,245,160,0.2);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.62rem;
+      color: #00f5a0;
+      letter-spacing: 0.08em;
+      background: rgba(0,245,160,0.05);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Cursor -->
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- Progress -->
+  <div id="progress-bar"></div>
+
+  <div id="app">
+
+    <!-- ════════════ NAVBAR ════════════ -->
+    <nav class="navbar" :class="{ scrolled: scrolled }">
+      <a href="#hero" class="nav-logo">
+        <i class="fa-solid fa-terminal" style="margin-right:0.5rem; font-size:0.85rem;"></i>DM.portfolio
+      </a>
+      <ul class="nav-links" :class="{ open: menuOpen }">
+        <li v-for="item in navItems" :key="item.href">
+          <a :href="item.href" @click="menuOpen = false">{{ item.label }}</a>
+        </li>
+      </ul>
+      <button class="hamburger" @click="menuOpen = !menuOpen">
+        <i :class="menuOpen ? 'fa-solid fa-xmark' : 'fa-solid fa-bars'"></i>
+      </button>
+    </nav>
+
+    <!-- ════════════ HERO ════════════ -->
+    <section id="hero">
+      <div id="particles-js"></div>
+      <div class="hero-content">
+        <!-- Status badge -->
+        <div style="margin-bottom: 2rem; display:flex; justify-content:center;">
+          <span class="status-badge">
+            <span class="status-dot"></span>
+            Disponible para oportunidades
+          </span>
+        </div>
+
+        <!-- Glitch name -->
+        <h1 class="glitch" data-text="Diego Marin">Diego Marin</h1>
+
+        <!-- Typewriter -->
+        <div class="typewriter-wrap">
+          <span class="typewriter">{{ currentRole }}<span class="cursor-blink"></span></span>
+        </div>
+
+        <!-- Meta info -->
+        <div style="margin-top:1rem; font-family:'Space Mono',monospace; font-size:0.68rem; color:#8888aa; letter-spacing:0.08em;">
+          18 años &nbsp;·&nbsp; Chile &nbsp;·&nbsp; Perfil multidisciplinario
+        </div>
+
+        <!-- Pills -->
+        <div style="margin-top:1.5rem; display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap;">
+          <span class="tag-pill">Linux</span>
+          <span class="tag-pill">AWS</span>
+          <span class="tag-pill">SSH</span>
+          <span class="tag-pill">Gastronomía</span>
+          <span class="tag-pill">Pesca Artesanal</span>
+        </div>
+
+        <!-- CTAs -->
+        <div style="margin-top:2.5rem; display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+          <a href="#about" class="btn-neon"><span>Conocerme</span></a>
+          <a href="#contact" class="btn-neon btn-cyan"><span>Contactar</span></a>
+        </div>
+
+        <!-- Scroll hint -->
+        <div style="margin-top:3.5rem; animation: bounce 2s infinite;">
+          <i class="fa-solid fa-chevron-down" style="color:rgba(0,245,160,0.3); font-size:0.85rem;"></i>
+        </div>
+        <style>
+          @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(8px)} }
+        </style>
+      </div>
+    </section>
+
+    <div class="neon-divider"></div>
+
+    <!-- ════════════ ABOUT ════════════ -->
+    <section id="about" style="background:#111118;">
+      <div class="section-inner">
+        <div data-aos="fade-up">
+          <p class="section-tag">// 01 — sobre mí</p>
+          <h2 class="section-title">Quién soy &amp; qué <span>traigo</span></h2>
+        </div>
+
+        <div class="about-grid">
+          <!-- Left: avatar + links -->
+          <div data-aos="fade-right" style="display:flex;flex-direction:column;align-items:center;gap:1.4rem;text-align:center;">
+            <div class="avatar">DM</div>
+
+            <div>
+              <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem;">Diego Marin</div>
+              <div style="font-family:'Space Mono',monospace;font-size:0.65rem;color:#00f5a0;margin-top:0.3rem;letter-spacing:0.1em;">
+                Perfil Multidisciplinario
+              </div>
+            </div>
+
+            <a href="https://github.com/diego0954-alt" target="_blank"
+               style="font-family:'Space Mono',monospace;font-size:0.68rem;color:#8888aa;text-decoration:none;
+                      display:inline-flex;align-items:center;gap:0.5rem;transition:color 0.2s;cursor:none;"
+               onmouseover="this.style.color='#00f5a0'" onmouseout="this.style.color='#8888aa'">
+              <i class="fa-brands fa-github"></i>diego0954-alt
+            </a>
+
+            <a href="mailto:diego0954@icloud.com"
+               style="font-family:'Space Mono',monospace;font-size:0.68rem;color:#8888aa;text-decoration:none;
+                      display:inline-flex;align-items:center;gap:0.5rem;transition:color 0.2s;cursor:none;"
+               onmouseover="this.style.color='#00d9f5'" onmouseout="this.style.color='#8888aa'">
+              <i class="fa-solid fa-envelope"></i>diego0954@icloud.com
+            </a>
+          </div>
+
+          <!-- Right: bio + stats -->
+          <div data-aos="fade-left">
+            <p style="color:#8888aa;line-height:1.95;font-size:0.93rem;margin-bottom:1.3rem;">
+              Soy Diego, 18 años, y soy de esas personas que no se quedan en una sola cosa.
+              Tengo base técnica en <strong style="color:#e8e8f0;">Linux, AWS y SSH</strong> —
+              sé moverme por un servidor remoto— y al mismo tiempo fui formado en
+              <strong style="color:#e8e8f0;">gastronomía y hostelería</strong>, sé cocinar, 
+              atender y trabajar bajo presión.
+            </p>
+            <p style="color:#8888aa;line-height:1.95;font-size:0.93rem;">
+              El <strong style="color:#e8e8f0;">voley</strong> me enseñó que sin equipo no hay victoria, 
+              y la <strong style="color:#e8e8f0;">pesca artesanal</strong> me enseñó paciencia y 
+              lectura del entorno. Tengo movilidad propia, ganas reales, y estoy buscando 
+              mi primera oportunidad para demostrar de qué estoy hecho.
+            </p>
+
+            <!-- Stats -->
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.9rem;margin-top:2.5rem;">
+              <div class="stat-card" data-aos="zoom-in" data-aos-delay="100">
+                <div class="stat-number">5+</div>
+                <div class="stat-label">Skills Técnicos</div>
+              </div>
+              <div class="stat-card" data-aos="zoom-in" data-aos-delay="200">
+                <div class="stat-number">4</div>
+                <div class="stat-label">Credenciales</div>
+              </div>
+              <div class="stat-card" data-aos="zoom-in" data-aos-delay="300">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Disponible</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="neon-divider"></div>
+
+    <!-- ════════════ SKILLS ════════════ -->
+    <section id="skills">
+      <div class="section-inner">
+        <div data-aos="fade-up">
+          <p class="section-tag">// 02 — habilidades</p>
+          <h2 class="section-title">Mi stack de <span>capacidades</span></h2>
+        </div>
+
+        <div class="skills-grid">
+
+          <!-- Tech -->
+          <div data-aos="fade-up" data-aos-delay="80">
+            <div class="category-label">
+              <i class="fa-solid fa-microchip" style="color:#00f5a0"></i>
+              Tecnología & Cloud
+            </div>
+            <div class="skill-card" v-for="s in skills.tech" :key="s.name">
+              <i :class="s.icon" style="color:#00f5a0"></i>
+              <div>
+                <div class="skill-name">{{ s.name }}</div>
+                <div class="skill-sub">{{ s.sub }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Gastro -->
+          <div data-aos="fade-up" data-aos-delay="160">
+            <div class="category-label">
+              <i class="fa-solid fa-utensils" style="color:#00d9f5"></i>
+              Gastronomía & Hostelería
+            </div>
+            <div class="skill-card cyan" v-for="s in skills.gastro" :key="s.name">
+              <i :class="s.icon" style="color:#00d9f5"></i>
+              <div>
+                <div class="skill-name">{{ s.name }}</div>
+                <div class="skill-sub">{{ s.sub }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Practical -->
+          <div data-aos="fade-up" data-aos-delay="240">
+            <div class="category-label">
+              <i class="fa-solid fa-anchor" style="color:#a78bfa"></i>
+              Habilidades Prácticas
+            </div>
+            <div class="skill-card purple" v-for="s in skills.practical" :key="s.name">
+              <i :class="s.icon" style="color:#a78bfa"></i>
+              <div>
+                <div class="skill-name">{{ s.name }}</div>
+                <div class="skill-sub">{{ s.sub }}</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <div class="neon-divider"></div>
+
+    <!-- ════════════ CERTIFICATIONS ════════════ -->
+    <section id="certs" style="background:#111118;">
+      <div class="section-inner">
+        <div data-aos="fade-up">
+          <p class="section-tag">// 03 — credenciales</p>
+          <h2 class="section-title">Certificaciones &amp; <span>Logros</span></h2>
+        </div>
+
+        <div class="certs-grid">
+          <div class="cert-card"
+               v-for="(cert, i) in certifications"
+               :key="cert.title"
+               data-aos="fade-up"
+               :data-aos-delay="i * 100">
+            <span class="cert-emoji">{{ cert.emoji }}</span>
+            <div class="cert-title">{{ cert.title }}</div>
+            <div class="cert-issuer">{{ cert.issuer }}</div>
+            <p class="cert-desc">{{ cert.desc }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="neon-divider"></div>
+
+    <!-- ════════════ HOBBIES ════════════ -->
+    <section id="hobbies">
+      <div class="section-inner">
+        <div data-aos="fade-up">
+          <p class="section-tag">// 04 — más sobre mí</p>
+          <h2 class="section-title">Lo que me <span>mueve</span></h2>
+          <p style="color:#8888aa;font-size:0.88rem;margin-top:0.75rem;max-width:520px;">
+            Más allá del currículum, estas son las cosas que me hacen ser quien soy.
+          </p>
+        </div>
+
+        <div class="hobbies-grid">
+          <div class="hobby-card"
+               v-for="(h, i) in hobbies"
+               :key="h.title"
+               data-aos="zoom-in"
+               :data-aos-delay="i * 70">
+            <span class="hobby-emoji">{{ h.emoji }}</span>
+            <div class="hobby-title">{{ h.title }}</div>
+            <div class="hobby-desc">{{ h.desc }}</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="neon-divider"></div>
+
+    <!-- ════════════ CONTACT ════════════ -->
+    <section id="contact" style="background:#111118;">
+      <div class="section-inner" style="max-width:720px;">
+        <div data-aos="fade-up" style="text-align:center;">
+          <p class="section-tag" style="justify-content:center;display:flex;">// 05 — contacto</p>
+          <h2 class="section-title" style="text-align:center;">
+            Hablemos &amp; <span>construyamos</span>
+          </h2>
+          <p style="color:#8888aa;margin-top:1rem;font-size:0.88rem;line-height:1.85;">
+            Estoy abierto a empleos, prácticas o cualquier oportunidad donde pueda aportar.<br>
+            Respondo rápido, tengo movilidad y muchas ganas.
+          </p>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:0.9rem;margin-top:3rem;" data-aos="fade-up" data-aos-delay="100">
+
+          <a href="mailto:diego0954@icloud.com" class="contact-link">
+            <i class="fa-solid fa-envelope icon"></i>
+            <div>
+              <div class="contact-label">Email principal</div>
+              <div class="contact-value">diego0954@icloud.com</div>
+            </div>
+            <i class="fa-solid fa-arrow-right contact-arrow"></i>
+          </a>
+
+          <a href="https://github.com/diego0954-alt" target="_blank" class="contact-link">
+            <i class="fa-brands fa-github icon"></i>
+            <div>
+              <div class="contact-label">GitHub</div>
+              <div class="contact-value">github.com/diego0954-alt</div>
+            </div>
+            <i class="fa-solid fa-arrow-right contact-arrow"></i>
+          </a>
+
+        </div>
+
+        <!-- Status box -->
+        <div style="margin-top:2rem;padding:1.75rem 2rem;background:rgba(0,245,160,0.035);
+                    border:1px solid rgba(0,245,160,0.1);text-align:center;"
+             data-aos="fade-up" data-aos-delay="200">
+          <div style="font-family:'Space Mono',monospace;font-size:0.62rem;
+                      color:#00f5a0;letter-spacing:0.2em;margin-bottom:0.5rem;">STATUS ACTUAL</div>
+          <div style="font-size:0.92rem;color:#e8e8f0;display:inline-flex;align-items:center;gap:0.65rem;">
+            <span class="status-dot"></span>
+            Activamente buscando mi primera oportunidad laboral
+          </div>
+          <div style="font-family:'Space Mono',monospace;font-size:0.65rem;
+                      color:#8888aa;margin-top:0.75rem;">
+            Licencia de conducir · Disponibilidad inmediata · Chile
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════ FOOTER ════════════ -->
+    <footer>
+      <div style="font-family:'Space Mono',monospace;font-size:0.68rem;color:#8888aa;letter-spacing:0.08em;">
+        © 2024 <span style="color:#00f5a0">Diego Marin</span>
+        &nbsp;·&nbsp; Construido con
+        <span style="color:#00d9f5">Vue 3</span> +
+        <span style="color:#00d9f5">Tailwind</span> +
+        <span style="color:#00d9f5">GSAP</span>
+      </div>
+      <div style="font-size:0.72rem;color:#444455;margin-top:0.7rem;font-style:italic;">
+        "La mejor inversión que puedes hacer es en ti mismo." — Warren Buffett
+      </div>
+    </footer>
+
+  </div><!-- /#app -->
+
+  <!-- ════════════ SCRIPTS CDN ════════════ -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
+  <script>
+  const { createApp, ref, onMounted } = Vue;
+
+  createApp({
+    setup() {
+
+      // ── State ──
+      const scrolled  = ref(false);
+      const menuOpen  = ref(false);
+      const currentRole = ref('');
+
+      // ── Nav items ──
+      const navItems = [
+        { label: 'Sobre mí',      href: '#about'   },
+        { label: 'Habilidades',   href: '#skills'  },
+        { label: 'Credenciales',  href: '#certs'   },
+        { label: 'Contacto',      href: '#contact' },
+      ];
+
+      // ── Typewriter ──
+      const roles = [
+        'Cloud & Linux Enthusiast ☁️',
+        'Gastrónomo en formación 🍳',
+        'Pescador Artesanal Certificado 🎣',
+        'Jugador de Voleibol 🏐',
+        'Siempre aprendiendo... 🚀',
+      ];
+      let ri = 0, ci = 0, del = false;
+      function type() {
+        const t = roles[ri];
+        if (!del) {
+          currentRole.value = t.slice(0, ++ci);
+          if (ci === t.length) { del = true; return setTimeout(type, 1800); }
+        } else {
+          currentRole.value = t.slice(0, --ci);
+          if (ci === 0) { del = false; ri = (ri + 1) % roles.length; }
+        }
+        setTimeout(type, del ? 38 : 65);
+      }
+
+      // ── Skills data ──
+      const skills = {
+        tech: [
+          { name: 'Linux',      sub: 'Administración de sistemas',    icon: 'fa-brands fa-linux'    },
+          { name: 'AWS',        sub: 'Amazon Web Services / Cloud',   icon: 'fa-brands fa-aws'      },
+          { name: 'VS Code',    sub: 'Editor de código principal',    icon: 'fa-solid fa-code'      },
+          { name: 'PuTTY / SSH',sub: 'Conexión a servidores remotos', icon: 'fa-solid fa-terminal'  },
+          { name: 'Gmail / iCloud', sub: 'Herramientas de comunicación', icon: 'fa-solid fa-envelope'},
+        ],
+        gastro: [
+          { name: 'Gastronomía',    sub: 'Formación en educación media',   icon: 'fa-solid fa-utensils'       },
+          { name: 'Hostelería',     sub: 'Curso certificado',              icon: 'fa-solid fa-hotel'          },
+          { name: 'Atención al cliente', sub: 'Servicio y hospitalidad',   icon: 'fa-solid fa-handshake'      },
+          { name: 'Trabajo en presión', sub: 'Dinámica de cocina / sala',  icon: 'fa-solid fa-fire-burner'    },
+        ],
+        practical: [
+          { name: 'Pesca Artesanal',   sub: 'Carnet oficial vigente',   icon: 'fa-solid fa-fish'     },
+          { name: 'Licencia de Conducir', sub: 'Movilidad propia',      icon: 'fa-solid fa-car'      },
+          { name: 'Trabajo en equipo', sub: 'Formación en voley',        icon: 'fa-solid fa-people-group' },
+          { name: 'Campo / Mar',       sub: 'Adaptación a entornos',    icon: 'fa-solid fa-water'    },
+        ],
+      };
+
+      // ── Certifications data ──
+      const certifications = [
+        {
+          emoji: '🐟',
+          title: 'Carnet de Pescador Artesanal',
+          issuer: 'Registro Oficial • Chile',
+          desc:   'Certificación que acredita legalmente la actividad de pesca artesanal. Formación práctica en técnicas y normativas del sector.',
+        },
+        {
+          emoji: '🚗',
+          title: 'Licencia de Conducir',
+          issuer: 'Registro Civil • Chile',
+          desc:   'Licencia vigente que garantiza movilidad autónoma para desempeñar roles que requieran desplazamiento.',
+        },
+        {
+          emoji: '🏨',
+          title: 'Curso de Hostelería',
+          issuer: 'Formación Certificada',
+          desc:   'Capacitación en atención al cliente, hospitalidad y gestión básica de espacios de hospedaje.',
+        },
+        {
+          emoji: '🍳',
+          title: 'Gastronomía — Ed. Media',
+          issuer: 'Educación Secundaria',
+          desc:   'Formación en técnicas culinarias, preparación de alimentos y fundamentos de cocina profesional.',
+        },
+      ];
+
+      // ── Hobbies data ──
+      const hobbies = [
+        { emoji: '🏐', title: 'Voleibol',         desc: 'El deporte de equipo que me enseñó coordinación, disciplina y comunicación.' },
+        { emoji: '🎣', title: 'Pesca Artesanal',  desc: 'Con carnet oficial. La paciencia y el mar son mis mejores maestros.' },
+        { emoji: '🍳', title: 'Cocinar',           desc: 'La gastronomía como arte. Combinar ingredientes = combinar habilidades.' },
+        { emoji: '☁️', title: 'Cloud Computing',   desc: 'Explorando AWS, servidores Linux y el mundo DevOps en mi tiempo libre.' },
+        { emoji: '💻', title: 'Terminal / CLI',    desc: 'Bash, SSH, vim... el lado oscuro de la informática me tiene convencido.' },
+      ];
+
+      // ── Mounted ──
+      onMounted(() => {
+        // Typewriter start
+        setTimeout(type, 800);
+
+        // AOS
+        AOS.init({ duration: 680, once: true, offset: 55, easing: 'ease-out-cubic' });
+
+        // GSAP
+        gsap.registerPlugin(ScrollTrigger);
+        gsap.from('.glitch', { opacity: 0, y: 50, duration: 1.1, ease: 'power3.out', delay: 0.2 });
+        gsap.from('.hero-content > *', {
+          opacity: 0, y: 28, duration: 0.9, stagger: 0.12, delay: 0.5, ease: 'power2.out'
+        });
+
+        // Scroll effects
+        window.addEventListener('scroll', () => {
+          scrolled.value = window.scrollY > 60;
+          const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+          document.getElementById('progress-bar').style.width = pct + '%';
+        });
+
+        // Custom cursor
+        const cur  = document.getElementById('cursor');
+        const ring = document.getElementById('cursor-ring');
+        let mx = 0, my = 0, rx = 0, ry = 0;
+        document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+        (function animate() {
+          cur.style.transform  = `translate(${mx - 5}px, ${my - 5}px)`;
+          rx += (mx - rx) * 0.11;
+          ry += (my - ry) * 0.11;
+          ring.style.transform = `translate(${rx - 17}px, ${ry - 17}px)`;
+          requestAnimationFrame(animate);
+        })();
+
+        // Particles.js
+        particlesJS('particles-js', {
+          particles: {
+            number: { value: 55, density: { enable: true, value_area: 900 } },
+            color: { value: ['#00f5a0', '#00d9f5'] },
+            shape: { type: 'circle' },
+            opacity: { value: 0.22, random: true, anim: { enable: true, speed: 0.6, opacity_min: 0.05 } },
+            size: { value: 2.2, random: true },
+            line_linked: { enable: true, distance: 140, color: '#00f5a0', opacity: 0.09, width: 1 },
+            move: { enable: true, speed: 1.1, direction: 'none', random: true, out_mode: 'out' },
+          },
+          interactivity: {
+            detect_on: 'canvas',
+            events: {
+              onhover: { enable: true, mode: 'grab' },
+              onclick: { enable: true, mode: 'push' },
+            },
+            modes: {
+              grab: { distance: 160, line_linked: { opacity: 0.4 } },
+              push: { particles_nb: 2 },
+            },
+          },
+          retina_detect: true,
+        });
+      });
+
+      return {
+        scrolled, menuOpen, currentRole,
+        navItems, skills, certifications, hobbies,
+      };
+    },
+  }).mount('#app');
+  </script>
+</body>
+</html>
