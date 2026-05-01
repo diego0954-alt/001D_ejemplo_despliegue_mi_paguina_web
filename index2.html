@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>F-Strings & Reportes Profesionales · Python Avanzado</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #0a0d12;
+    --surface:  #111520;
+    --panel:    #161c2a;
+    --border:   #234a91;
+    --green:    #00ff9d;
+    --green-dim:#00c97a;
+    --amber:    #ffb800;
+    --cyan:     #00d4ff;
+    --pink:     #ff4d8f;
+    --text:     #cdd6f4;
+    --muted:    #6b7a99;
+    --white:    #e8eaf6;
+    --tag-bg:   #677fa7;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Scanlines overlay */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.07) 2px,
+      rgba(0,0,0,0.07) 4px
+    );
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  /* ── HEADER ─────────────────────────────────────── */
+  header {
+    position: relative;
+    padding: 5rem 2rem 4rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .header-glow {
+    position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 300px;
+    background: radial-gradient(ellipse, rgba(0,255,157,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .7rem; letter-spacing: .15em;
+    color: var(--green);
+    border: 1px solid var(--green);
+    padding: .25rem .8rem; border-radius: 2px;
+    margin-bottom: 1.5rem;
+    animation: fadeUp .6s ease both;
+  }
+
+  h1 {
+    font-size: clamp(2.4rem, 6vw, 4.8rem);
+    font-weight: 800; line-height: 1.05;
+    color: var(--white);
+    animation: fadeUp .7s .1s ease both;
+  }
+
+  h1 span { color: var(--green); }
+
+  .subtitle {
+    margin-top: 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .95rem; color: var(--muted);
+    animation: fadeUp .7s .2s ease both;
+  }
+
+  .header-tags {
+    display: flex; gap: .6rem; justify-content: center; flex-wrap: wrap;
+    margin-top: 2rem;
+    animation: fadeUp .7s .3s ease both;
+  }
+
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .72rem; padding: .3rem .7rem;
+    background: var(--tag-bg); border: 1px solid var(--border);
+    border-radius: 2px; color: var(--cyan);
+  }
+
+  /* ── NAV ─────────────────────────────────────────── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,13,18,.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: .8rem 2rem;
+    display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;
+  }
+
+  nav a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .78rem; color: var(--muted);
+    text-decoration: none; letter-spacing: .05em;
+    transition: color .2s;
+  }
+  nav a:hover { color: var(--green); }
+
+  /* ── LAYOUT ──────────────────────────────────────── */
+  .container { max-width: 960px; margin: 0 auto; padding: 0 2rem; }
+
+  section { padding: 5rem 0; border-bottom: 1px solid var(--border); }
+  section:last-of-type { border-bottom: none; }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .68rem; letter-spacing: .2em;
+    color: var(--green); text-transform: uppercase;
+    margin-bottom: .8rem;
+  }
+
+  h2 {
+    font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+    font-weight: 800; color: var(--white);
+    margin-bottom: 1rem; line-height: 1.1;
+  }
+
+  h3 {
+    font-size: 1.1rem; font-weight: 700;
+    color: var(--amber); margin-bottom: .8rem;
+  }
+
+  p { line-height: 1.8; color: var(--text); font-size: .97rem; }
+
+  /* ── CARDS ───────────────────────────────────────── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.8rem;
+    margin-top: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color .25s, transform .2s;
+  }
+  .card:hover {
+    border-color: rgba(0,255,157,.3);
+    transform: translateY(-2px);
+  }
+  .card::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: linear-gradient(180deg, var(--green), transparent);
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.2rem; margin-top: 1.5rem;
+  }
+
+  /* ── CODE BLOCKS ─────────────────────────────────── */
+  .code-block {
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 1.5rem 0;
+  }
+
+  .code-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: .6rem 1rem;
+    background: rgba(255,255,255,.03);
+    border-bottom: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .7rem; color: var(--muted);
+  }
+
+  .code-dots { display: flex; gap: 5px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #febc2e; }
+  .dot-g { background: #28c840; }
+
+  pre {
+    padding: 1.4rem 1.2rem;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .82rem;
+    line-height: 1.75;
+  }
+
+  /* Syntax colors */
+  .k  { color: var(--pink); }       /* keyword */
+  .s  { color: #a6e3a1; }           /* string */
+  .fs { color: var(--amber); }      /* f-string content */
+  .fc { color: var(--cyan); }       /* format spec */
+  .v  { color: var(--text); }       /* variable */
+  .c  { color: var(--muted); font-style: italic; } /* comment */
+  .n  { color: #cba6f7; }           /* number */
+  .fn { color: #89dceb; }           /* function */
+  .o  { color: var(--green); }      /* output */
+
+  /* ── OUTPUT TERMINAL ─────────────────────────────── */
+  .terminal {
+    background: #060810;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .8rem;
+    line-height: 1.9;
+    margin-top: 1rem;
+    color: var(--green);
+    overflow-x: auto;
+  }
+
+  .terminal .prompt { color: var(--muted); }
+  .terminal .out   { color: var(--green); }
+  .terminal .dim   { color: #3a4a60; }
+
+  /* ── SPEC TABLE ──────────────────────────────────── */
+  .spec-table {
+    width: 100%; border-collapse: collapse; margin-top: 1.5rem;
+    font-family: 'JetBrains Mono', monospace; font-size: .8rem;
+  }
+  .spec-table th {
+    background: var(--panel); color: var(--green);
+    padding: .7rem 1rem; text-align: left;
+    font-size: .7rem; letter-spacing: .1em;
+    border-bottom: 1px solid var(--border);
+  }
+  .spec-table td {
+    padding: .65rem 1rem;
+    border-bottom: 1px solid rgba(30,42,64,.5);
+    color: var(--text);
+  }
+  .spec-table tr:hover td { background: rgba(255,255,255,.02); }
+  .spec-table .mono { color: var(--amber); }
+  .spec-table .result { color: var(--cyan); }
+
+  /* ── HIGHLIGHT BOX ───────────────────────────────── */
+  .info-box {
+    border: 1px solid rgba(0,212,255,.2);
+    background: rgba(0,212,255,.04);
+    border-radius: 4px; padding: 1.2rem 1.4rem;
+    margin: 1.5rem 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .82rem; color: var(--cyan);
+    line-height: 1.7;
+  }
+  .info-box strong { color: var(--white); }
+
+  /* ── TICKET GENERATOR ────────────────────────────── */
+  #generator {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2rem;
+    margin-top: 2rem;
+  }
+
+  .gen-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem; margin-top: 1.5rem;
+  }
+  @media(max-width:600px) { .gen-grid { grid-template-columns: 1fr; } }
+
+  .field label {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .7rem; letter-spacing: .1em;
+    color: var(--muted); margin-bottom: .4rem;
+  }
+
+  .field input, .field select {
+    width: 100%; padding: .55rem .8rem;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--white);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .82rem;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .field input:focus, .field select:focus { border-color: var(--green); }
+  .field select option { background: var(--panel); }
+
+  .items-section { margin-top: 1.5rem; }
+  .items-section h4 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .75rem; color: var(--muted); letter-spacing: .1em;
+    margin-bottom: .8rem;
+  }
+
+  .item-row {
+    display: grid;
+    grid-template-columns: 1fr 70px 90px 36px;
+    gap: .5rem; margin-bottom: .5rem; align-items: center;
+  }
+
+  .item-row input {
+    padding: .45rem .7rem;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 3px; color: var(--white);
+    font-family: 'JetBrains Mono', monospace; font-size: .8rem;
+    outline: none; width: 100%; transition: border-color .2s;
+  }
+  .item-row input:focus { border-color: var(--amber); }
+
+  .btn-del {
+    background: none; border: 1px solid #3a2030;
+    color: var(--pink); border-radius: 3px;
+    cursor: pointer; font-size: .9rem; height: 32px;
+    transition: background .2s;
+  }
+  .btn-del:hover { background: rgba(255,77,143,.1); }
+
+  .btn {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .78rem; letter-spacing: .08em;
+    padding: .6rem 1.4rem; border-radius: 3px;
+    cursor: pointer; border: none; transition: all .2s;
+  }
+  .btn-add {
+    background: none; border: 1px dashed var(--border);
+    color: var(--muted); margin-top: .3rem;
+  }
+  .btn-add:hover { border-color: var(--amber); color: var(--amber); }
+  .btn-gen {
+    background: var(--green); color: #0a0d12;
+    font-weight: 700; margin-top: 1.5rem;
+  }
+  .btn-gen:hover { background: var(--green-dim); transform: translateY(-1px); }
+
+  /* Ticket output */
+  #ticket-output {
+    margin-top: 2rem;
+    display: none;
+  }
+
+  .ticket-preview {
+    background: #060810;
+    border: 1px solid var(--green);
+    border-radius: 4px;
+    padding: 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .78rem;
+    line-height: 1.9;
+    color: var(--green);
+    white-space: pre;
+    overflow-x: auto;
+    box-shadow: 0 0 30px rgba(0,255,157,.06);
+  }
+
+  .ticket-code {
+    margin-top: 1.5rem;
+  }
+
+  /* ── ANIMATIONS ──────────────────────────────────── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0; transform: translateY(20px);
+    transition: opacity .6s ease, transform .6s ease;
+  }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  /* ── FOOTER ──────────────────────────────────────── */
+  footer {
+    padding: 3rem 2rem;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .72rem; color: var(--muted);
+    border-top: 1px solid var(--border);
+  }
+  footer span { color: var(--green); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ──────────────────────────────────────── -->
+<header>
+  <div class="header-glow"></div>
+  <div class="badge">Python Avanzado · CLI &amp; Docs</div>
+  <h1>F-Strings &amp;<br><span>Reportes Profesionales</span></h1>
+  <p class="subtitle">// Formateo avanzado de strings para presentación de datos en terminal</p>
+  <div class="header-tags">
+    <span class="tag">redondeo de decimales</span>
+    <span class="tag">alineación</span>
+    <span class="tag">relleno de caracteres</span>
+    <span class="tag">tickets tabulados</span>
+    <span class="tag">reportes CLI</span>
+  </div>
+</header>
+
+<!-- ── NAV ──────────────────────────────────────────── -->
+<nav>
+  <a href="#intro">¿Qué son?</a>
+  <a href="#decimales">Decimales</a>
+  <a href="#alineacion">Alineación</a>
+  <a href="#relleno">Relleno</a>
+  <a href="#anatomia">Anatomía</a>
+  <a href="#generador">Generador</a>
+</nav>
+
+<!-- ── INTRO ─────────────────────────────────────────── -->
+<section id="intro">
+  <div class="container reveal">
+    <div class="section-label">// 01 · Fundamento</div>
+    <h2>¿Qué son los F-Strings?</h2>
+    <p>Los <strong>f-strings</strong> (formatted string literals) son la forma más poderosa y moderna de formatear texto en Python (desde la versión 3.6). Permiten incrustar expresiones directamente dentro de un string y controlar con precisión cómo se muestran los datos: ancho, alineación, decimales, relleno y más.</p>
+
+    <div class="code-block" style="margin-top:2rem">
+      <div class="code-header">
+        <div class="code-dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+        <span>sintaxis_basica.py</span>
+      </div>
+<pre><span class="c"># Forma clásica (antigua, verbosa)</span>
+nombre = <span class="s">"María"</span>
+precio = <span class="n">1234.5</span>
+<span class="fn">print</span>(<span class="s">"Hola %s, tu total es %.2f"</span> % (nombre, precio))
+
+<span class="c"># Con .format() — mejor, pero aún limitado</span>
+<span class="fn">print</span>(<span class="s">"Hola {}, tu total es {:.2f}"</span>.<span class="fn">format</span>(nombre, precio))
+
+<span class="c"># F-string — conciso, potente, legible ✓</span>
+<span class="fn">print</span>(<span class="fs">f"Hola {nombre}, tu total es </span><span class="fc">{precio:<span class="fn">.2f</span>}</span><span class="fs">"</span>)
+
+<span class="c"># Incluso soporta expresiones directamente</span>
+items = [<span class="n">10</span>, <span class="n">25</span>, <span class="n">8</span>]
+<span class="fn">print</span>(<span class="fs">f"Total de items: </span><span class="fc">{<span class="fn">len</span>(items)}</span><span class="fs">, Suma: </span><span class="fc">{<span class="fn">sum</span>(items)}</span><span class="fs">"</span>)</pre>
+    </div>
+
+    <div class="info-box">
+      <strong>Sintaxis general:</strong><br>
+      <code>f"texto <span style="color:var(--amber)">{</span>variable<span style="color:var(--amber)">:</span><span style="color:var(--cyan)">[[fill]align][width][.precision][type]</span><span style="color:var(--amber)">}</span> más texto"</code>
+    </div>
+  </div>
+</section>
+
+<!-- ── DECIMALES ──────────────────────────────────────── -->
+<section id="decimales">
+  <div class="container reveal">
+    <div class="section-label">// 02 · Redondeo</div>
+    <h2>Control de Decimales</h2>
+    <p>El especificador <code>:.Nf</code> permite controlar exactamente cuántos decimales mostrar. Esencial para precios, porcentajes y datos científicos.</p>
+
+    <div class="code-block" style="margin-top:1.5rem">
+      <div class="code-header">
+        <div class="code-dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+        <span>decimales.py</span>
+      </div>
+<pre>precio = <span class="n">1234.56789</span>
+iva     = <span class="n">0.19</span>
+total   = precio * (<span class="n">1</span> + iva)
+
+<span class="fn">print</span>(<span class="fs">f"Precio bruto : $</span><span class="fc">{precio<span class="fn">:.2f</span>}</span><span class="fs">"</span>)        <span class="c"># 2 decimales</span>
+<span class="fn">print</span>(<span class="fs">f"IVA (19%)    :  </span><span class="fc">{iva * <span class="n">100</span><span class="fn">:.1f</span>}</span><span class="fs">%"</span>)      <span class="c"># 1 decimal + %</span>
+<span class="fn">print</span>(<span class="fs">f"Total a pagar: $</span><span class="fc">{total<span class="fn">:.2f</span>}</span><span class="fs">"</span>)          <span class="c"># 2 decimales</span>
+<span class="fn">print</span>(<span class="fs">f"Sin decimales: $</span><span class="fc">{total<span class="fn">:.0f</span>}</span><span class="fs">"</span>)          <span class="c"># 0 decimales</span>
+<span class="fn">print</span>(<span class="fs">f"Notación cien.:  </span><span class="fc">{total<span class="fn">:.2e</span>}</span><span class="fs">"</span>)         <span class="c"># científica</span></pre>
+    </div>
+
+    <div class="terminal">
+      <span class="prompt">$ python decimales.py</span><br>
+      <span class="out">Precio bruto : $1234.57</span><br>
+      <span class="out">IVA (19%)    :  19.0%</span><br>
+      <span class="out">Total a pagar: $1469.14</span><br>
+      <span class="out">Sin decimales: $1469</span><br>
+      <span class="out">Notación cien.:  1.47e+03</span>
+    </div>
+
+    <table class="spec-table" style="margin-top:2rem">
+      <thead>
+        <tr><th>Especificador</th><th>Significado</th><th>Ejemplo → Resultado</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="mono">:.2f</td><td>2 decimales fijos</td><td class="result">3.14159 → "3.14"</td></tr>
+        <tr><td class="mono">:.0f</td><td>Sin decimales</td><td class="result">3.7 → "4"</td></tr>
+        <tr><td class="mono">:.4f</td><td>4 decimales</td><td class="result">1.5 → "1.5000"</td></tr>
+        <tr><td class="mono">:.2%</td><td>Porcentaje (×100)</td><td class="result">0.875 → "87.50%"</td></tr>
+        <tr><td class="mono">:.2e</td><td>Notación científica</td><td class="result">123456 → "1.23e+05"</td></tr>
+        <tr><td class="mono">:,.2f</td><td>Miles con coma</td><td class="result">1234567.8 → "1,234,567.80"</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── ALINEACIÓN ─────────────────────────────────────── -->
+<section id="alineacion">
+  <div class="container reveal">
+    <div class="section-label">// 03 · Alineación</div>
+    <h2>Alineación de Texto</h2>
+    <p>El especificador de alineación define cómo se posiciona el contenido dentro de un campo de ancho fijo. Clave para columnas perfectamente alineadas en reportes de terminal.</p>
+
+    <div class="card-grid">
+      <div class="card">
+        <h3>&lt; · Izquierda</h3>
+        <p>Alinea el contenido a la <strong>izquierda</strong> del campo. Es el valor por defecto para strings.</p>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.82rem;margin-top:.8rem;color:var(--amber)">f"{valor:<strong style='color:var(--green)'>:&lt;20</strong>}"</div>
+      </div>
+      <div class="card">
+        <h3>&gt; · Derecha</h3>
+        <p>Alinea el contenido a la <strong>derecha</strong> del campo. Por defecto para números.</p>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.82rem;margin-top:.8rem;color:var(--amber)">f"{valor:<strong style='color:var(--green)'>:&gt;20</strong>}"</div>
+      </div>
+      <div class="card">
+        <h3>^ · Centro</h3>
+        <p>Centra el contenido dentro del campo. Ideal para encabezados y títulos.</p>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.82rem;margin-top:.8rem;color:var(--amber)">f"{valor:<strong style='color:var(--green)'>:^20</strong>}"</div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+        <span>alineacion.py</span>
+      </div>
+<pre>producto = <span class="s">"Café Molido"</span>
+precio   = <span class="n">4990</span>
+
+<span class="c"># Ancho 25, alineación izquierda</span>
+<span class="fn">print</span>(<span class="fs">f"|</span><span class="fc">{producto<span class="fn">:&lt;25</span>}</span><span class="fs">|"</span>)    <span class="c"># |Café Molido              |</span>
+
+<span class="c"># Ancho 25, alineación derecha</span>
+<span class="fn">print</span>(<span class="fs">f"|</span><span class="fc">{producto<span class="fn">:&gt;25</span>}</span><span class="fs">|"</span>)    <span class="c"># |              Café Molido|</span>
+
+<span class="c"># Ancho 25, centrado</span>
+<span class="fn">print</span>(<span class="fs">f"|</span><span class="fc">{producto<span class="fn">:^25</span>}</span><span class="fs">|"</span>)    <span class="c"># |       Café Molido       |</span>
+
+<span class="c"># Combinar: descripción izquierda + precio derecha</span>
+ancho_desc  = <span class="n">25</span>
+ancho_precio = <span class="n">10</span>
+
+<span class="fn">print</span>(<span class="fs">f"</span><span class="fc">{producto<span class="fn">:&lt;25</span>}</span><span class="fs">$</span><span class="fc">{precio<span class="fn">:&gt;9,</span>}</span><span class="fs">"</span>)</pre>
+    </div>
+
+    <div class="terminal">
+      <span class="out">|Café Molido              |</span><br>
+      <span class="out">|              Café Molido|</span><br>
+      <span class="out">|       Café Molido       |</span><br>
+      <span class="out">Café Molido               $    4,990</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── RELLENO ────────────────────────────────────────── -->
+<section id="relleno">
+  <div class="container reveal">
+    <div class="section-label">// 04 · Relleno de Caracteres</div>
+    <h2>Fill Characters (Relleno)</h2>
+    <p>El carácter de relleno (<em>fill</em>) reemplaza los espacios vacíos al alinear. Se especifica <strong>antes</strong> del operador de alineación y puede ser cualquier carácter.</p>
+
+    <div class="info-box">
+      <strong>Sintaxis:</strong> <code>f"{valor:<span style="color:var(--pink)">FILL</span><span style="color:var(--green)">ALIGN</span><span style="color:var(--amber)">WIDTH</span>}"</code><br><br>
+      Donde <span style="color:var(--pink)">FILL</span> = cualquier carácter (espacio, -, *, =, ·, etc.)<br>
+      <span style="color:var(--green)">ALIGN</span> = &lt; &gt; ^<br>
+      <span style="color:var(--amber)">WIDTH</span> = número entero (ancho total del campo)
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+        <span>relleno.py</span>
+      </div>
+<pre>titulo  = <span class="s">"RESUMEN"</span>
+precio  = <span class="n">9990.5</span>
+w       = <span class="n">40</span>   <span class="c"># ancho de la línea</span>
+
+<span class="c"># Relleno con guiones — muy común en reportes</span>
+<span class="fn">print</span>(<span class="fs">f"</span><span class="fc">{titulo<span class="fn">:-^40</span>}</span><span class="fs">"</span>)       <span class="c"># ---------RESUMEN---------</span>
+
+<span class="c"># Relleno con igual — para secciones</span>
+<span class="fn">print</span>(<span class="fs">f"</span><span class="fc">{'TOTAL'<span class="fn">:=^40</span>}</span><span class="fs">"</span>)        <span class="c"># ==================TOTAL==================</span>
+
+<span class="c"># Relleno con asterisco — énfasis</span>
+<span class="fn">print</span>(<span class="fs">f"</span><span class="fc">{'ERROR'<span class="fn">:*^40</span>}</span><span class="fs">"</span>)        <span class="c"># *******************ERROR*******************</span>
+
+<span class="c"># Relleno con punto — para precios en menú</span>
+concepto = <span class="s">"Subtotal"</span>
+<span class="fn">print</span>(<span class="fs">f"</span><span class="fc">{concepto<span class="fn">:·&lt;30</span>}</span><span class="fs">$</span><span class="fc">{precio<span class="fn">:&gt;9.2f</span>}</span><span class="fs">"</span>)
+
+<span class="c"># Ceros a la izquierda en números</span>
+num_factura = <span class="n">42</span>
+<span class="fn">print</span>(<span class="fs">f"Factura N°</span><span class="fc">{num_factura<span class="fn">:0&gt;6</span>}</span><span class="fs">"</span>)   <span class="c"># Factura N°000042</span></pre>
+    </div>
+
+    <div class="terminal">
+      <span class="out">----------------RESUMEN-----------------</span><br>
+      <span class="out">==================TOTAL=================</span><br>
+      <span class="out">*******************ERROR********************</span><br>
+      <span class="out">Subtotal·····················     9990.50</span><br>
+      <span class="out">Factura N°000042</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── ANATOMÍA ───────────────────────────────────────── -->
+<section id="anatomia">
+  <div class="container reveal">
+    <div class="section-label">// 05 · Anatomía Completa</div>
+    <h2>Anatomy of an F-String Format Spec</h2>
+    <p>Todos los elementos del especificador de formato se pueden combinar. Aquí el mapa completo:</p>
+
+    <div class="code-block" style="margin-top:1.5rem">
+      <div class="code-header">
+        <div class="code-dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+        <span>anatomia_completa.py</span>
+      </div>
+<pre><span class="c"># {variable : [fill][align][sign][width][grouping][.precision][type]}</span>
+<span class="c">#              ──── ─────  ──── ───── ──────────  ──────────  ────</span>
+<span class="c">#              ·    ^      +    20    ,           .4          f</span>
+
+val = <span class="n">-1234567.891</span>
+<span class="fn">print</span>(<span class="fs">f"</span><span class="fc">{val<span class="fn">:·^+25,.2f</span>}</span><span class="fs">"</span>)
+<span class="c"># ····-1,234,567.89·····</span>
+
+<span class="c"># Un ejemplo completo de reporte en terminal</span>
+W = <span class="n">45</span>   <span class="c"># ancho total</span>
+
+<span class="fn">print</span>(<span class="fs">f"</span><span class="fc">{'':=^{W}}</span><span class="fs">"</span>)                              <span class="c"># ═══════</span>
+<span class="fn">print</span>(<span class="fs">f"</span><span class="fc">{'TICKET DE COMPRA':^{W}}</span><span class="fs">"</span>)               <span class="c"># título</span>
+<span class="fn">print</span>(<span class="fs">f"</span><span class="fc">{'':=^{W}}</span><span class="fs">"</span>)
+<span class="fn">print</span>(<span class="fs">f"</span><span class="fc">{'Producto':<span class="fn">&lt;28</span>}</span><span class="fs"> </span><span class="fc">{'Cant':<span class="fn">^5</span>}</span><span class="fs"> </span><span class="fc">{'Precio':<span class="fn">&gt;10</span>}</span><span class="fs">"</span>)
+<span class="fn">print</span>(<span class="fs">f"</span><span class="fc">{'':–^{W}}</span><span class="fs">"</span>)
+productos = [
+    (<span class="s">"Café Molido 250g"</span>, <span class="n">2</span>, <span class="n">3490</span>),
+    (<span class="s">"Leche Entera 1L"</span>,  <span class="n">3</span>, <span class="n">890</span>),
+    (<span class="s">"Pan Integral"</span>,     <span class="n">1</span>, <span class="n">1250</span>),
+]
+<span class="k">for</span> nombre, cant, precio <span class="k">in</span> productos:
+    subtotal = cant * precio
+    <span class="fn">print</span>(<span class="fs">f"</span><span class="fc">{nombre<span class="fn">:&lt;28</span>}</span><span class="fs"> </span><span class="fc">{cant<span class="fn">:^5</span>}</span><span class="fs"> $</span><span class="fc">{subtotal<span class="fn">:&gt;9,</span>}</span><span class="fs">"</span>)</pre>
+    </div>
+
+    <div class="terminal">
+      <span class="out">=============================================</span><br>
+      <span class="out">           TICKET DE COMPRA                 </span><br>
+      <span class="out">=============================================</span><br>
+      <span class="out">Producto                      Cant     Precio</span><br>
+      <span class="out">---------------------------------------------</span><br>
+      <span class="out">Café Molido 250g                2  $    6,980</span><br>
+      <span class="out">Leche Entera 1L                 3  $    2,670</span><br>
+      <span class="out">Pan Integral                    1  $    1,250</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── GENERADOR ──────────────────────────────────────── -->
+<section id="generador">
+  <div class="container reveal">
+    <div class="section-label">// 06 · Generador Interactivo</div>
+    <h2>Generador de Tickets</h2>
+    <p>Completa los datos y genera un ticket perfectamente tabulado usando f-strings. También verás el código Python equivalente.</p>
+
+    <div id="generator">
+      <div class="gen-grid">
+        <div class="field">
+          <label>NOMBRE DEL NEGOCIO</label>
+          <input type="text" id="negocio" value="Minimarket El Sol" placeholder="Nombre del local">
+        </div>
+        <div class="field">
+          <label>N° DE BOLETA</label>
+          <input type="text" id="boleta" value="42" placeholder="001">
+        </div>
+        <div class="field">
+          <label>CAJERO / VENDEDOR</label>
+          <input type="text" id="cajero" value="Valentina López">
+        </div>
+        <div class="field">
+          <label>TIPO DE REPORTE</label>
+          <select id="tipo">
+            <option value="ticket">🧾 Ticket de Venta</option>
+            <option value="inventario">📦 Inventario</option>
+            <option value="resumen">📊 Resumen Diario</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="items-section">
+        <h4>// ITEMS DEL TICKET</h4>
+        <div id="items-list">
+          <div class="item-row">
+            <input type="text" placeholder="Nombre producto" value="Café Molido 250g" class="item-name">
+            <input type="number" placeholder="Cant" value="2" class="item-qty" min="1">
+            <input type="number" placeholder="Precio" value="3490" class="item-price" min="0">
+            <button class="btn-del" onclick="delItem(this)">✕</button>
+          </div>
+          <div class="item-row">
+            <input type="text" placeholder="Nombre producto" value="Leche 1L" class="item-name">
+            <input type="number" placeholder="Cant" value="3" class="item-qty" min="1">
+            <input type="number" placeholder="Precio" value="890" class="item-price" min="0">
+            <button class="btn-del" onclick="delItem(this)">✕</button>
+          </div>
+          <div class="item-row">
+            <input type="text" placeholder="Nombre producto" value="Pan Integral" class="item-name">
+            <input type="number" placeholder="Cant" value="1" class="item-qty" min="1">
+            <input type="number" placeholder="Precio" value="1250" class="item-price" min="0">
+            <button class="btn-del" onclick="delItem(this)">✕</button>
+          </div>
+        </div>
+        <button class="btn btn-add" onclick="addItem()">+ Agregar producto</button>
+      </div>
+
+      <button class="btn btn-gen" onclick="generateTicket()">⚡ Generar Ticket</button>
+    </div>
+
+    <!-- OUTPUT -->
+    <div id="ticket-output">
+      <div class="section-label" style="margin-top:2rem;margin-bottom:.5rem">// PREVIEW DEL TICKET</div>
+      <div class="ticket-preview" id="ticket-text"></div>
+
+      <div class="ticket-code">
+        <div class="section-label" style="margin-bottom:.5rem">// CÓDIGO PYTHON EQUIVALENTE</div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+            <span>ticket_generado.py</span>
+          </div>
+          <pre id="code-output" style="color:var(--text)"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Python Avanzado · Proyecto Educativo · <span>F-Strings &amp; Reportes Profesionales</span></p>
+  <p style="margin-top:.4rem">Habilidad: Comunicación Técnica (Docs) · CLI Terminal</p>
+</footer>
+
+<script>
+/* ─── Reveal on scroll ─────────────────────────── */
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+/* ─── Item management ──────────────────────────── */
+function addItem() {
+  const row = document.createElement('div');
+  row.className = 'item-row';
+  row.innerHTML = `
+    <input type="text" placeholder="Nombre producto" class="item-name">
+    <input type="number" placeholder="Cant" value="1" class="item-qty" min="1">
+    <input type="number" placeholder="Precio" value="0" class="item-price" min="0">
+    <button class="btn-del" onclick="delItem(this)">✕</button>`;
+  document.getElementById('items-list').appendChild(row);
+}
+
+function delItem(btn) {
+  const rows = document.querySelectorAll('.item-row');
+  if(rows.length <= 1) return;
+  btn.closest('.item-row').remove();
+}
+
+/* ─── Pad / align helpers ─────────────────────── */
+function padL(str, w) { return String(str).padStart(w); }
+function padR(str, w) { return String(str).padEnd(w); }
+function padC(str, w) {
+  str = String(str);
+  const total = w - str.length;
+  if(total <= 0) return str;
+  const left = Math.floor(total / 2);
+  const right = total - left;
+  return ' '.repeat(left) + str + ' '.repeat(right);
+}
+function fmt(n) {
+  return Number(n).toLocaleString('es-CL', {minimumFractionDigits:0, maximumFractionDigits:0});
+}
+function fmtDec(n) {
+  return Number(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+/* ─── Generate Ticket ──────────────────────────── */
+function generateTicket() {
+  const negocio = document.getElementById('negocio').value || 'Mi Negocio';
+  const boleta  = document.getElementById('boleta').value  || '001';
+  const cajero  = document.getElementById('cajero').value  || 'Cajero';
+  const tipo    = document.getElementById('tipo').value;
+
+  const rows = document.querySelectorAll('.item-row');
+  const items = [];
+  rows.forEach(r => {
+    const n = r.querySelector('.item-name').value.trim();
+    const q = parseInt(r.querySelector('.item-qty').value) || 1;
+    const p = parseFloat(r.querySelector('.item-price').value) || 0;
+    if(n) items.push({ nombre: n, qty: q, precio: p, sub: q * p });
+  });
+
+  const W = 46;
+  const sep  = '─'.repeat(W);
+  const sep2 = '═'.repeat(W);
+
+  const now = new Date();
+  const fecha = now.toLocaleDateString('es-CL');
+  const hora  = now.toLocaleTimeString('es-CL', {hour:'2-digit', minute:'2-digit'});
+
+  const subtotal = items.reduce((a,i) => a + i.sub, 0);
+  const iva      = subtotal * 0.19;
+  const total    = subtotal + iva;
+
+  let ticket = '';
+  let code   = '';
+
+  if(tipo === 'ticket') {
+    ticket += sep2 + '\n';
+    ticket += padC(negocio.toUpperCase(), W) + '\n';
+    ticket += padC('BOLETA DE VENTA ELECTRÓNICA', W) + '\n';
+    ticket += sep2 + '\n';
+    ticket += padR(`Boleta N° ${boleta.toString().padStart(6,'0')}`, 25) + padL(fecha, W-25) + '\n';
+    ticket += padR(`Cajero: ${cajero}`, 25)                             + padL(hora, W-25) + '\n';
+    ticket += sep + '\n';
+    ticket += padR('PRODUCTO', 28) + padC('CANT',5) + padL('PRECIO', W-33) + '\n';
+    ticket += sep + '\n';
+    items.forEach(i => {
+      ticket += padR(i.nombre.substring(0,27), 28) + padC(String(i.qty),5) + padL('$'+fmt(i.sub), W-33) + '\n';
+    });
+    ticket += sep + '\n';
+    ticket += padR('Subtotal', 32) + padL('$'+fmt(subtotal), W-32) + '\n';
+    ticket += padR('IVA (19%)', 32) + padL('$'+fmt(iva), W-32) + '\n';
+    ticket += sep2 + '\n';
+    ticket += padR('TOTAL', 32) + padL('$'+fmt(total), W-32) + '\n';
+    ticket += sep2 + '\n';
+    ticket += padC('¡Gracias por su compra!', W) + '\n';
+    ticket += padC('Vuelva pronto', W) + '\n';
+
+    code = generateCodeTicket(negocio, boleta, cajero, items, W);
+  }
+  else if(tipo === 'inventario') {
+    ticket += sep2 + '\n';
+    ticket += padC('REPORTE DE INVENTARIO', W) + '\n';
+    ticket += padC(negocio.toUpperCase(), W) + '\n';
+    ticket += sep2 + '\n';
+    ticket += padR('ITEM', 28) + padC('STOCK',6) + padL('VALOR TOTAL', W-34) + '\n';
+    ticket += sep + '\n';
+    let totalInv = 0;
+    items.forEach((i,idx) => {
+      totalInv += i.sub;
+      ticket += padR(`${(idx+1).toString().padStart(2,'0')}. ${i.nombre.substring(0,24)}`, 28) + padC(String(i.qty),6) + padL('$'+fmt(i.sub), W-34) + '\n';
+    });
+    ticket += sep + '\n';
+    ticket += padR('Total inventario', 32) + padL('$'+fmt(totalInv), W-32) + '\n';
+    ticket += padR('Total items', 32) + padL(String(items.length)+' productos', W-32) + '\n';
+    ticket += sep2 + '\n';
+    ticket += padC(fecha + ' ' + hora, W) + '\n';
+
+    code = generateCodeInventario(negocio, items, W);
+  }
+  else {
+    ticket += sep2 + '\n';
+    ticket += padC('RESUMEN DIARIO DE VENTAS', W) + '\n';
+    ticket += padC(negocio.toUpperCase(), W) + '\n';
+    ticket += padR('Fecha:', 10) + padL(fecha, W-10) + '\n';
+    ticket += sep2 + '\n';
+    ticket += padR('CONCEPTO', 32) + padL('MONTO', W-32) + '\n';
+    ticket += sep + '\n';
+    items.forEach(i => {
+      ticket += padR(i.nombre.substring(0,31), 32) + padL('$'+fmt(i.sub), W-32) + '\n';
+    });
+    ticket += sep + '\n';
+    ticket += padR('VENTAS BRUTAS', 32) + padL('$'+fmt(subtotal), W-32) + '\n';
+    ticket += padR('IVA RECAUDADO (19%)', 32) + padL('$'+fmt(iva), W-32) + '\n';
+    ticket += padR(`IVA (${(iva/subtotal*100).toFixed(1)}%)`, 32) + padL('$'+fmt(iva), W-32) + '\n';
+    ticket += sep2 + '\n';
+    ticket += padR('TOTAL DEL DÍA', 32) + padL('$'+fmt(total), W-32) + '\n';
+    ticket += padR('PROMEDIO POR VENTA', 32) + padL('$'+fmt(total/items.length), W-32) + '\n';
+    ticket += sep2 + '\n';
+    ticket += padC('Generado automáticamente', W) + '\n';
+
+    code = generateCodeResumen(negocio, cajero, items, W);
+  }
+
+  document.getElementById('ticket-text').textContent = ticket;
+  document.getElementById('code-output').textContent = code;
+
+  const out = document.getElementById('ticket-output');
+  out.style.display = 'block';
+  out.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ─── Code generators ──────────────────────────── */
+function generateCodeTicket(neg, bol, caj, items, W) {
+  const lines = [];
+  lines.push(`from datetime import datetime`);
+  lines.push(``);
+  lines.push(`# ── Datos ─────────────────────────────────────────`);
+  lines.push(`NEGOCIO = "${neg}"`);
+  lines.push(`BOLETA  = ${parseInt(bol)||1}`);
+  lines.push(`CAJERO  = "${caj}"`);
+  lines.push(`W       = ${W}   # ancho del ticket`);
+  lines.push(``);
+  lines.push(`items = [`);
+  items.forEach(i => {
+    lines.push(`    ("${i.nombre}", ${i.qty}, ${i.precio}),`);
+  });
+  lines.push(`]`);
+  lines.push(``);
+  lines.push(`# ── Cálculos ──────────────────────────────────────`);
+  lines.push(`subtotal = sum(q * p for _, q, p in items)`);
+  lines.push(`iva      = subtotal * 0.19`);
+  lines.push(`total    = subtotal + iva`);
+  lines.push(``);
+  lines.push(`ahora = datetime.now()`);
+  lines.push(`fecha = ahora.strftime("%d/%m/%Y")`);
+  lines.push(`hora  = ahora.strftime("%H:%M")`);
+  lines.push(``);
+  lines.push(`# ── Impresión con f-strings ───────────────────────`);
+  lines.push(`print(f"{'':=^{W}}")`);
+  lines.push(`print(f"{NEGOCIO.upper():^{W}}")`);
+  lines.push(`print(f"{'BOLETA DE VENTA ELECTRÓNICA':^{W}}")`);
+  lines.push(`print(f"{'':=^{W}}")`);
+  lines.push(`print(f"{'Boleta N° ' + str(BOLETA).zfill(6):<25}{fecha:>{W-25}}")`);
+  lines.push(`print(f"{'Cajero: ' + CAJERO:<25}{hora:>{W-25}}")`);
+  lines.push(`print(f"{'':─^{W}}")`);
+  lines.push(`print(f"{'PRODUCTO':<28} {'CANT':^5} {'PRECIO':>{W-35}}")`);
+  lines.push(`print(f"{'':─^{W}}")`);
+  lines.push(``);
+  lines.push(`for nombre, cant, precio in items:`);
+  lines.push(`    subtotal_item = cant * precio`);
+  lines.push(`    print(f"{nombre:<28} {cant:^5} \${subtotal_item:>${W-35},.0f}")`);
+  lines.push(``);
+  lines.push(`print(f"{'':─^{W}}")`);
+  lines.push(`print(f"{'Subtotal':<32} \${subtotal:>${W-33},.0f}")`);
+  lines.push(`print(f"{'IVA (19%)':<32} \${iva:>${W-33},.0f}")`);
+  lines.push(`print(f"{'':=^{W}}")`);
+  lines.push(`print(f"{'TOTAL':<32} \${total:>${W-33},.0f}")`);
+  lines.push(`print(f"{'':=^{W}}")`);
+  lines.push(`print(f"{'¡Gracias por su compra!':^{W}}")`);
+  return lines.join('\n');
+}
+
+function generateCodeInventario(neg, items, W) {
+  const lines = [];
+  lines.push(`# ── Reporte de Inventario con f-strings ───────────`);
+  lines.push(`NEGOCIO = "${neg}"`);
+  lines.push(`W       = ${W}`);
+  lines.push(``);
+  lines.push(`inventario = [`);
+  items.forEach(i => { lines.push(`    ("${i.nombre}", ${i.qty}, ${i.precio}),`); });
+  lines.push(`]`);
+  lines.push(``);
+  lines.push(`print(f"{'':=^{W}}")`);
+  lines.push(`print(f"{'REPORTE DE INVENTARIO':^{W}}")`);
+  lines.push(`print(f"{NEGOCIO.upper():^{W}}")`);
+  lines.push(`print(f"{'':=^{W}}")`);
+  lines.push(`print(f"{'ITEM':<28} {'STOCK':^6} {'VALOR TOTAL':>{W-36}}")`);
+  lines.push(`print(f"{'':─^{W}}")`);
+  lines.push(``);
+  lines.push(`total_inventario = 0`);
+  lines.push(`for idx, (nombre, stock, precio) in enumerate(inventario, 1):`);
+  lines.push(`    valor = stock * precio`);
+  lines.push(`    total_inventario += valor`);
+  lines.push(`    print(f"{idx:02}. {nombre:<24} {stock:^6} \${valor:>${W-36},.0f}")`);
+  lines.push(``);
+  lines.push(`print(f"{'':─^{W}}")`);
+  lines.push(`print(f"{'Total inventario':<32} \${total_inventario:>${W-33},.0f}")`);
+  lines.push(`print(f"{'':=^{W}}")`);
+  return lines.join('\n');
+}
+
+function generateCodeResumen(neg, caj, items, W) {
+  const lines = [];
+  lines.push(`# ── Resumen Diario con f-strings ──────────────────`);
+  lines.push(`NEGOCIO = "${neg}"`);
+  lines.push(`CAJERO  = "${caj}"`);
+  lines.push(`W       = ${W}`);
+  lines.push(``);
+  lines.push(`ventas = [`);
+  items.forEach(i => { lines.push(`    ("${i.nombre}", ${i.sub}),`); });
+  lines.push(`]`);
+  lines.push(``);
+  lines.push(`bruto = sum(v for _, v in ventas)`);
+  lines.push(`iva   = bruto * 0.19`);
+  lines.push(`total = bruto + iva`);
+  lines.push(``);
+  lines.push(`print(f"{'':=^{W}}")`);
+  lines.push(`print(f"{'RESUMEN DIARIO DE VENTAS':^{W}}")`);
+  lines.push(`print(f"{NEGOCIO.upper():^{W}}")`);
+  lines.push(`print(f"{'':=^{W}}")`);
+  lines.push(`print(f"{'CONCEPTO':<32} {'MONTO':>{W-33}}")`);
+  lines.push(`print(f"{'':─^{W}}")`);
+  lines.push(``);
+  lines.push(`for concepto, monto in ventas:`);
+  lines.push(`    print(f"{concepto:<32} \${monto:>${W-33},.0f}")`);
+  lines.push(``);
+  lines.push(`print(f"{'':─^{W}}")`);
+  lines.push(`print(f"{'VENTAS BRUTAS':<32} \${bruto:>${W-33},.0f}")`);
+  lines.push(`print(f"{'IVA RECAUDADO (19%)':<32} \${iva:>${W-33},.0f}")`);
+  lines.push(`print(f"{'':=^{W}}")`);
+  lines.push(`print(f"{'TOTAL DEL DÍA':<32} \${total:>${W-33},.0f}")`);
+  lines.push(`print(f"{'PROMEDIO POR VENTA':<32} \${total/len(ventas):>${W-33},.0f}")`);
+  lines.push(`print(f"{'':=^{W}}")`);
+  return lines.join('\n');
+}
+</script>
+</body>
+</html>
