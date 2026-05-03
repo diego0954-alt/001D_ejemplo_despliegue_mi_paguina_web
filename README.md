@@ -37,4 +37,4 @@ Ubicación: Chile 🇨🇱
 
 💫En la cocina se respeta al Chef, en el servidor se respeta al root." 🐧🍳
 ## 🌐 Proyecto - Generador de Tickets con F-Strings
-[Ver página en vivo](https://diego0954-alt.github.io/001D_ejemplo_despliegue_mi_pagina_web/fstrings_reportes.html)
+[Ver página en vivo](https://diego0954-alt.github.io/001D_ejemplo_despliegue_mi_paguina_web/fstrings_reportes.html)
