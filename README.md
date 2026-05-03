@@ -1,9 +1,6 @@
 👋 ¡Hola! Soy Diego Marin
 🚀 Perfil Multidisciplinario | Entusiasta Cloud | Gastronomía
 
-## 🌐 Proyecto - Generador de Tickets con F-Strings
-[Ver página en vivo](https://diego0954-alt.github.io/001D_ejemplo_despliegue_mi_pagina_web/fstrings_reportes.html)
-
 Soy una persona que cree en la versatilidad y la disciplina. Mi camino profesional es único, y eso me permite aportar una visión diferente en cualquier equipo:
 
 Tecnología: Entusiasta de Linux y la infraestructura Cloud (AWS). Me apasiona la administración de sistemas y el trabajo desde la terminal.
@@ -39,3 +36,5 @@ Email: diego0954@icloud.com
 Ubicación: Chile 🇨🇱
 
 💫En la cocina se respeta al Chef, en el servidor se respeta al root." 🐧🍳
+## 🌐 Proyecto - Generador de Tickets con F-Strings
+[Ver página en vivo](https://diego0954-alt.github.io/001D_ejemplo_despliegue_mi_pagina_web/fstrings_reportes.html)
